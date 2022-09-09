@@ -23,7 +23,7 @@ Your question says that you would like a row that is not checked should to be re
 
 This is a step towards having the DGV present with a mix of read-only and editable rows.
 
-[screenshot](https://github.com/IVSoftware/dgv-with-row-styles/blob/master/dgv_with_row_styles/Screenshots/screenshots.png)
+![screenshot](https://github.com/IVSoftware/dgv-with-row-styles/blob/master/dgv_with_row_styles/Screenshots/screenshots.png)
 
 This is predicated on having the `DataSource` property of the DGV set to a binding list of a class we'll call `DgvItem` that is minimally implemented as shown. The reason for making the `IsChecked` a binding property is in order to have the DataSource send a notification when its value changes (otherwise it only notifies when items are added or removed).
 
