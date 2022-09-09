@@ -1,4 +1,4 @@
-Your question says that you would like a row that is not checked should to be readonly. One obvious conflict is that if a row is truly read-only in its entireity, then there would be no way to ever check it to make it editable. My first suggestion would be to make a `refreshStyles` method that takes into account which cells are `DataGridViewCheckBoxCell` so that these can always be toggled regardless of the state of the row.
+The question says that a row that is not checked should to be ReadOnly. One obvious conflict is that if a row is truly read-only in its entireity, then there would be no way to ever check it to make it editable. My first suggestion would be to make a `refreshStyles` method that takes into account which cells are `DataGridViewCheckBoxCell` so that these can always be toggled regardless of the state of the row.
 
     private void refreshStyles()
     {
