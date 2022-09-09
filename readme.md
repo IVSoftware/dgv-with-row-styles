@@ -25,7 +25,8 @@ This is a step towards having the DGV present with a mix of read-only and editab
 
 ![screenshot](https://github.com/IVSoftware/dgv-with-row-styles/blob/master/dgv_with_row_styles/Screenshots/screenshots.png)
 
-This is predicated on having the `DataSource` property of the DGV set to a binding list of a class we'll call `DgvItem` that is minimally implemented as shown. The reason for making the `IsChecked` a binding property is in order to have the DataSource send a notification when its value changes (otherwise it only notifies when items are added or removed).
+***
+This is all based on having the `DataSource` property of the DGV set to a binding list of a class we'll call `DgvItem` that is minimally implemented as shown. The reason for making the `IsChecked` a binding property is in order to have the DataSource send a notification when its value changes (otherwise it only notifies when items are added or removed).
 
     class DgvItem : INotifyPropertyChanged
     {
@@ -42,12 +43,58 @@ This is predicated on having the `DataSource` property of the DGV set to a bindi
                 }
             }
         }
-
         public string Description { get; set; }
-
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
+
+***
+**Initialize**
+
+The only thing left is to glue it all together in the `override` of the `Load` event in `MainForm`.
+
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        dataGridView.AllowUserToAddRows = false;
+
+        // Set the DataSource of DGV to a binding list of 'DgvItem' instances.
+        dataGridView.DataSource = DataSource;
+        for (int i = 1; i <= 5; i++)
+        {
+            DataSource.Add(new DgvItem { Description = $"Item {i}" });
+        }
+
+        // Do a little column formatting
+        dataGridView.Columns[nameof(DgvItem.IsChecked)].Width = 50;
+        dataGridView.Columns[nameof(DgvItem.IsChecked)].HeaderText = string.Empty;
+        dataGridView.Columns[nameof(DgvItem.Description)].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+        // Ensure the row isn't stuck in edit mode when a checkbox changes
+        dataGridView.CurrentCellDirtyStateChanged += (sender, e) =>
+        {
+            if(dataGridView.CurrentCell is DataGridViewCheckBoxCell)
+            {
+                dataGridView.EndEdit();
+            }
+        };
+
+        // Get notified when a checkbox changes
+        DataSource.ListChanged += (sender, e) =>
+        {
+            switch (e.ListChangedType)
+            {
+                case ListChangedType.ItemChanged:
+                    // Make changes to row styles when that happens.
+                    refreshStyles();
+                    break;
+            }
+        };
+
+        // Init the styles
+        refreshStyles();
+    }
+
